@@ -1,6 +1,5 @@
 ko.utils = new (function () {
     var stringTrimRegex = /^[\s\u00A0]+|[\s\u00A0]+$/g;
-    var nativeTrim = String.prototype.trim;
 
     // Represent the known event types in a compact way, then at runtime transform it into a hash with event name as key (for fast lookup)
     var knownEvents = {}, knownEventTypesByEventName = {};
@@ -174,8 +173,8 @@ ko.utils = new (function () {
 
         stringTrim: function (string) {
             return !string ? "" :
-                nativeTrim ?
-                    nativeTrim.call(string) :
+                string.trim ?
+                    string.trim() :
                     string.toString().replace(stringTrimRegex, "");
         },
 
