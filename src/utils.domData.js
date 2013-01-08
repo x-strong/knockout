@@ -3,7 +3,11 @@ ko.utils.domData = new (function () {
     var uniqueId = 0;
     var dataStoreKeyExpandoPropertyName = "__ko__" + (new Date).getTime();
     var dataStore = {};
+    var extendedCleanCallbacks = [];
     return {
+        addCleanCallback: function(callback) {
+            extendedCleanCallbacks.push(callback);
+        },
         get: function (node, key) {
             var allDataForNode = ko.utils.domData.getAll(node, false);
             return allDataForNode === undefined ? undefined : allDataForNode[key];
@@ -29,6 +33,11 @@ ko.utils.domData = new (function () {
             return dataStore[dataStoreKey];
         },
         clear: function (node) {
+            if (extendedCleanCallbacks.length) {
+                for (var i = 0, callback; callback = extendedCleanCallbacks[i]; i++) {
+                    callback(node);
+                }
+            }
             var dataStoreKey = node[dataStoreKeyExpandoPropertyName];
             if (dataStoreKey) {
                 delete dataStore[dataStoreKey];

@@ -71,6 +71,11 @@
     }
 
     var boundElementDomDataKey = '__ko_boundElement';
+    ko.utils.domData.addCleanCallback(function(node) {
+        if (node[boundElementDomDataKey])
+            node[boundElementDomDataKey] = null;
+    });
+
     function applyBindingsToNodeInternal (node, bindings, viewModelOrBindingContext, bindingContextMayDifferFromDomParentElement) {
         // Need to be sure that inits are only run once, and updates never run until all the inits have been run
         var initPhase = 0; // 0 = before all inits, 1 = during inits, 2 = after all inits
@@ -92,12 +97,12 @@
         var bindingHandlerThatControlsDescendantBindings;
 
         // Prevent multiple applyBindings calls for the same node, except when a binding value is specified
-        var alreadyBound = ko.utils.domData.get(node, boundElementDomDataKey);
+        var alreadyBound = node[boundElementDomDataKey];
         if (!bindings) {
             if (alreadyBound) {
                 throw Error("You cannot apply bindings multiple times to the same element.");
             }
-            ko.utils.domData.set(node, boundElementDomDataKey, true);
+            node[boundElementDomDataKey] = true;
         }
 
         ko.dependentObservable(
